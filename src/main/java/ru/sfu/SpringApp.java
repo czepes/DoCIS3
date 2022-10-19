@@ -6,6 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import ru.sfu.entity.Television;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Main class of the program
@@ -20,6 +21,7 @@ public class SpringApp {
         INSERT,
         SHOW,
         DELETE,
+        UPDATE,
         FIND,
         MENU,
         EXIT
@@ -57,11 +59,11 @@ public class SpringApp {
 
         showMenu();
 
-        List<Television> tvs = null;
+        List<Television> tvs;
 
         while (true) {
             int input = InputUtil.getInt(
-                    "> ",
+                    "Menu > ",
                     Menu.values()[0].ordinal(),
                     Menu.values()[Menu.values().length-1].ordinal()
             );
@@ -115,6 +117,22 @@ public class SpringApp {
                                 "No television with such parameters exists!"
                         );
                     }
+                }
+
+                case UPDATE -> {
+                    Optional<Television> optional =
+                            repository.findById(InputUtil.getInt("ID > "));
+                    if (optional.isEmpty()) {
+                        System.out.println("Television was not found");
+                        break;
+                    }
+                    Television tv = optional.get();
+                    tv.setModel(InputUtil.getString("Model > "));
+                    tv.setProducer(InputUtil.getString("Producer > "));
+                    tv.setProductionCountry(InputUtil.getString("Production Country > "));
+                    tv.setWidth(InputUtil.getInt("Width (? > 0) > "));
+                    tv.setHeight(InputUtil.getInt("Height (? > 0) > "));
+                    repository.save(tv);
                 }
 
                 case MENU -> showMenu();
